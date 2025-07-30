@@ -1,0 +1,23 @@
+{
+  "name": "autopickup-platform",
+  "version": "1.0.0",
+  "description": "虚拟产品自动提货平台",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:admin": "cd admin-panel && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../admin-panel && npm install",
+    "build:all": "cd backend && npm run build && cd ../frontend && npm run build && cd ../admin-panel && npm run build",
+    "start:prod": "concurrently \"cd backend && npm start\" \"cd frontend && serve -s build\" \"cd admin-panel && serve -s build\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
