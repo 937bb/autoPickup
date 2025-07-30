@@ -74,6 +74,10 @@ const PickupCodeManager: React.FC<PickupCodeManagerProps> = ({ productId }) => {
       if (codeType === 'usage') {
         data.usageLimit = usageLimit;
       } else if (codeType === 'time') {
+        if (!expiresAt) {
+          toast.error('请选择过期时间');
+          return;
+        }
         data.expiresAt = expiresAt;
       }
       
@@ -101,6 +105,10 @@ const PickupCodeManager: React.FC<PickupCodeManagerProps> = ({ productId }) => {
       if (codeType === 'usage') {
         data.usageLimit = usageLimit;
       } else if (codeType === 'time') {
+        if (!expiresAt) {
+          toast.error('请选择过期时间');
+          return;
+        }
         data.expiresAt = expiresAt;
       }
       
@@ -171,7 +179,10 @@ const PickupCodeManager: React.FC<PickupCodeManagerProps> = ({ productId }) => {
   const resetForm = () => {
     setCodeType('usage');
     setUsageLimit(10);
-    setExpiresAt('');
+    // 设置默认过期时间为7天后
+    const defaultExpireDate = new Date();
+    defaultExpireDate.setDate(defaultExpireDate.getDate() + 7);
+    setExpiresAt(defaultExpireDate.toISOString().slice(0, 16));
   };
   
   return (
@@ -237,21 +248,24 @@ const PickupCodeManager: React.FC<PickupCodeManagerProps> = ({ productId }) => {
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {code.usageLimit ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <HashtagIcon className="w-3 h-3 mr-1" />
-                        使用次数: {code.usageLimit}次
-                      </span>
-                    ) : code.expiresAt ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <ClockIcon className="w-3 h-3 mr-1" />
-                        到期时间: {new Date(code.expiresAt).toLocaleDateString()}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        无限制
-                      </span>
-                    )}
+                    <div className="flex flex-col gap-1">
+                      {code.usageLimit && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          <HashtagIcon className="w-3 h-3 mr-1" />
+                          使用次数: {code.usageLimit}次
+                        </span>
+                      )}
+                      {code.expiresAt ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <ClockIcon className="w-3 h-3 mr-1" />
+                          到期时间: {new Date(code.expiresAt).toLocaleDateString()}
+                        </span>
+                      ) : !code.usageLimit && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          永久有效
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {code.usageLimit ? (
@@ -350,7 +364,15 @@ const PickupCodeManager: React.FC<PickupCodeManagerProps> = ({ productId }) => {
                       type="radio"
                       className="form-radio h-4 w-4 text-blue-600"
                       checked={codeType === 'time'}
-                      onChange={() => setCodeType('time')}
+                      onChange={() => {
+                        setCodeType('time');
+                        // 如果当前没有设置过期时间，设置默认值
+                        if (!expiresAt) {
+                          const defaultExpireDate = new Date();
+                          defaultExpireDate.setDate(defaultExpireDate.getDate() + 7);
+                          setExpiresAt(defaultExpireDate.toISOString().slice(0, 16));
+                        }
+                      }}
                     />
                     <span className="ml-2 text-gray-700">时间限制</span>
                   </label>

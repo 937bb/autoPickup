@@ -106,7 +106,7 @@ const DeliveryTemplateSchema: Schema = new Schema({
 });
 
 // 索引
-DeliveryTemplateSchema.index({ templateCode: 1 });
+// templateCode已经有unique: true，会自动创建索引，不需要手动创建
 DeliveryTemplateSchema.index({ deliveryType: 1 });
 DeliveryTemplateSchema.index({ isActive: 1 });
 DeliveryTemplateSchema.index({ isDefault: 1 });

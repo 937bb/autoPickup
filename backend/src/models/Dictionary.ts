@@ -102,7 +102,7 @@ DictionaryItemSchema.index({ parentCode: 1 });
 DictionaryItemSchema.index({ isActive: 1 });
 DictionaryItemSchema.index({ sort: 1 });
 
-DictionaryTypeSchema.index({ typeCode: 1 });
+// typeCode已经有unique: true，会自动创建索引，不需要手动创建
 DictionaryTypeSchema.index({ isActive: 1 });
 
 export const DictionaryItem = mongoose.model<IDictionaryItem>('DictionaryItem', DictionaryItemSchema);

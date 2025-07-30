@@ -9,6 +9,8 @@ export interface IPickupCode extends Document {
   usageLimit?: number;
   usedCount: number;
   expiresAt?: Date;
+  deletedAt?: Date;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
   // 虚拟属性
@@ -65,13 +67,21 @@ const PickupCodeSchema: Schema = new Schema({
   expiresAt: {
     type: Date,
     default: null
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
 });
 
 // 索引
-PickupCodeSchema.index({ code: 1 });
+// code已经有unique: true，会自动创建索引，不需要手动创建
 PickupCodeSchema.index({ productId: 1 });
 PickupCodeSchema.index({ merchantId: 1 });
 PickupCodeSchema.index({ expiresAt: 1 });

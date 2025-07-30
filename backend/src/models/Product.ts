@@ -4,8 +4,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IProduct extends Document {
   name: string;
   description: string;
-  category: string;        // 使用字典代码
-  deliveryType: string;    // 使用字典代码
+  categoryCode: string;        // 使用字典代码
+  deliveryTypeCode: string;    // 使用字典代码
   price: number;
   stock: number;
   merchantId: mongoose.Types.ObjectId;
@@ -13,7 +13,7 @@ export interface IProduct extends Document {
   images: string[];
   tags: string[];
   sales: number;
-  deliveryTemplate?: string; // 使用模板代码
+  deliveryTemplateCode?: string; // 使用模板代码
   deliveryData?: any;          // 发货数据
   createdAt: Date;
   updatedAt: Date;

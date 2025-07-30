@@ -37,7 +37,8 @@ router.get('/product/:productId',
       // 获取提货码列表
       const pickupCodes = await PickupCode.find({
         productId,
-        merchantId
+        merchantId,
+        isDeleted: { $ne: true }
       }).sort({ createdAt: -1 });
 
       res.json({
@@ -168,7 +169,8 @@ router.put('/:codeId',
       // 查找并验证提货码所有权
       const pickupCode = await PickupCode.findOne({
         _id: codeId,
-        merchantId
+        merchantId,
+        isDeleted: { $ne: true }
       });
 
       if (!pickupCode) {
@@ -217,7 +219,8 @@ router.delete('/:codeId',
       // 查找并验证提货码所有权
       const pickupCode = await PickupCode.findOne({
         _id: codeId,
-        merchantId
+        merchantId,
+        isDeleted: { $ne: true }
       });
 
       if (!pickupCode) {
@@ -228,8 +231,15 @@ router.delete('/:codeId',
         return;
       }
 
-      // 删除提货码
-      await PickupCode.deleteOne({ _id: codeId });
+      // 软删除提货码
+      await PickupCode.updateOne(
+        { _id: codeId },
+        { 
+          isDeleted: true,
+          deletedAt: new Date(),
+          isActive: false
+        }
+      );
 
       res.json({
         success: true,

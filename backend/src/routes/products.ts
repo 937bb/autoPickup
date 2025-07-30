@@ -57,6 +57,7 @@ router.get('/',
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('每页数量必须在1-100之间'),
     query('category').optional().isString().withMessage('分类必须是字符串'),
     query('search').optional().isString().withMessage('搜索关键词必须是字符串'),
+    query('status').optional().isIn(['active', 'inactive', 'all']).withMessage('状态筛选无效'),
     query('sortBy').optional().isIn(['latest', 'price_asc', 'price_desc', 'sales']).withMessage('排序方式无效')
   ],
   async (req: Request, res: Response): Promise<void> => {
@@ -75,10 +76,19 @@ router.get('/',
       const limit = parseInt(req.query.limit as string) || 12;
       const category = req.query.category as string;
       const search = req.query.search as string;
+      const status = req.query.status as string || 'active';
       const sortBy = req.query.sortBy as string || 'latest';
 
       // 构建查询条件
-      const query: any = { isActive: true };
+      const query: any = {};
+      
+      // 根据status参数筛选商品状态
+      if (status === 'active') {
+        query.isActive = true;
+      } else if (status === 'inactive') {
+        query.isActive = false;
+      }
+      // status === 'all' 时不添加isActive条件，显示所有商品
       
       if (category) {
         query.category = category;
@@ -228,9 +238,28 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // 获取分类和发货类型的详细信息
+    const [categoryItem, deliveryTypeItem] = await Promise.all([
+      DictionaryItem.findOne({ code: product.categoryCode }),
+      DictionaryItem.findOne({ code: product.deliveryTypeCode })
+    ]);
+
+    // 构建返回数据
+    const productData: any = product.toObject();
+    productData.categoryCode = categoryItem ? {
+      _id: categoryItem._id,
+      code: categoryItem.code,
+      name: categoryItem.name
+    } : null;
+    productData.deliveryTypeCode = deliveryTypeItem ? {
+      _id: deliveryTypeItem._id,
+      code: deliveryTypeItem.code,
+      name: deliveryTypeItem.name
+    } : null;
+
     res.json({
       success: true,
-      data: product
+      data: productData
     });
 
   } catch (error) {

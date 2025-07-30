@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 
+ * @Author: 937bb
+ * @Date: 2025-07-30 21:19:30
+ * @LastEditors: 937bb
+ * @LastEditTime: 2025-07-30 21:40:48
+ */
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,6 +20,8 @@ import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
 import merchantRoutes from './routes/merchants';
 import pickupRoutes from './routes/pickup';
+import pickupCodeRoutes from './routes/pickupCodes';
+import pickupCodeVerifyRoutes from './routes/pickupCodeVerify';
 import adminRoutes from './routes/admin';
 import statsRoutes from './routes/stats'; // 添加统计路由导入
 import dictionaryRoutes from './routes/dictionary';
@@ -21,6 +31,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// 信任代理设置 - 解决express-rate-limit的X-Forwarded-For警告
+app.set('trust proxy', 1);
 
 // 安全中间件
 app.use(cors());
@@ -56,7 +69,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 // app.use('/api/customers', customerRoutes); // 删除这行
 app.use('/api/dictionary', dictionaryRoutes);
-app.use('/api/pickup', pickupRoutes);
+app.use('/api/pickup', pickupCodeVerifyRoutes);
+app.use('/api/pickup-codes', pickupCodeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stats', statsRoutes);
 
